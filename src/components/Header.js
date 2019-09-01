@@ -10,9 +10,6 @@ const Header = () => (
     <NavLink to="/create" activeClassName="is-active">
       Create Expanse
     </NavLink>
-    <NavLink to="/edit" activeClassName="is-active">
-      Edit Expanse
-    </NavLink>
   </header>
 );
 export default Header;

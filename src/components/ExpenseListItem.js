@@ -4,8 +4,6 @@ import moment from 'moment';
 import numeral from 'numeral';
 import 'numeral/locales';
 
-numeral.locale('en-gb');
-
 const ExpenseListItem = ({ description, amount, createdAt, id }) => (
   <div>
     <Link to={`/edit/${id}`}>

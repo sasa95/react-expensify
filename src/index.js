@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import './firebase/firebase';
 import 'react-dates/lib/css/_datepicker.css';
 import './styles/styles.scss';
 import configureStore from './store/configureStore';

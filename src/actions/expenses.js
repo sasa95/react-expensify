@@ -6,7 +6,7 @@ export const addExpense = expense => ({
 });
 
 export const startAddExpense = (expenseData = {}) => {
-  return dispatch => {
+  return async dispatch => {
     const {
       description = '',
       note = '',
@@ -16,16 +16,16 @@ export const startAddExpense = (expenseData = {}) => {
 
     const expense = { description, note, amount, createdAt };
 
-    fs.collection('expenses')
-      .add(expense)
-      .then(ref => {
-        dispatch(
-          addExpense({
-            id: ref.id,
-            ...expense
-          })
-        );
-      });
+    const ref = await fs.collection('expenses').add(expense);
+
+    dispatch(
+      addExpense({
+        id: ref.id,
+        ...expense
+      })
+    );
+
+    return ref;
   };
 };
 

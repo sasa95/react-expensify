@@ -34,13 +34,19 @@ export const removeExpense = ({ id } = {}) => ({
   id
 });
 
+export const startRemoveExpense = id => {
+  return async dispatch => {
+    await fs.doc(`expenses/${id}`).delete();
+
+    dispatch(removeExpense({ id }));
+  };
+};
+
 export const editExpense = (id, updates) => ({
   type: 'EDIT_EXPENSE',
   id,
   updates
 });
-
-// SET EXPENSES
 
 export const setExpenses = expenses => ({
   type: 'SET_EXPENSES',

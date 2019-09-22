@@ -7,7 +7,8 @@ import {
   removeExpense,
   setExpenses,
   startSetExpenses,
-  startRemoveExpense
+  startRemoveExpense,
+  startEditExpense
 } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import fs from '.././../firebase/firebase';
@@ -163,6 +164,34 @@ test('should remove expenses from firebase', async done => {
   const doc = await fs.doc(`expenses/${id}`).get();
 
   expect(doc.exists).toBe(false);
+
+  done();
+});
+
+test('should edit expense from firebase', async done => {
+  const store = createMockStore({});
+  const id = expenses[2].id;
+  const updates = {
+    description: 'Bill xyz',
+    note: 'Paid on time'
+  };
+
+  await store.dispatch(startEditExpense(id, updates));
+
+  const actions = store.getActions();
+
+  expect(actions[0]).toEqual({
+    type: 'EDIT_EXPENSE',
+    id,
+    updates
+  });
+
+  const doc = await fs.doc(`expenses/${id}`).get();
+
+  expect({ id, ...doc.data() }).toEqual({
+    ...expenses[2],
+    ...updates
+  });
 
   done();
 });

@@ -48,6 +48,16 @@ export const editExpense = (id, updates) => ({
   updates
 });
 
+export const startEditExpense = (id, updates) => {
+  return async dispatch => {
+    await fs.doc(`expenses/${id}`).update({
+      ...updates
+    });
+
+    dispatch(editExpense(id, updates));
+  };
+};
+
 export const setExpenses = expenses => ({
   type: 'SET_EXPENSES',
   expenses

@@ -4,12 +4,37 @@ import {
   startAddExpense,
   addExpense,
   editExpense,
-  removeExpense
+  removeExpense,
+  setExpenses,
+  startSetExpenses
 } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import fs from '.././../firebase/firebase';
 
 const createMockStore = configureMockStore([thunk]);
+
+beforeEach(async done => {
+  const batchDelete = fs.batch();
+
+  const expensesRef = await fs.collection('expenses').get();
+
+  expensesRef.docs.forEach(expense => {
+    batchDelete.delete(fs.doc(`expenses/${expense.id}`));
+  });
+
+  batchDelete.commit().then();
+
+  const batch = fs.batch();
+
+  expenses.forEach(({ id, description, note, amount, createdAt }) => {
+    const ref = fs.collection('expenses').doc(id);
+    batch.set(ref, { description, note, amount, createdAt });
+  });
+
+  await batch.commit();
+
+  done();
+});
 
 test('should setup remove expense action object', () => {
   const action = removeExpense({ id: '123abc' });
@@ -93,6 +118,30 @@ test('should add expense with defaults to database and store', async done => {
     id: expense.id,
     ...expense.data()
   }).toEqual(actions[0].expense);
+
+  done();
+});
+
+test('should setup set expense action object with data', () => {
+  const action = setExpenses(expenses);
+
+  expect(action).toEqual({
+    type: 'SET_EXPENSES',
+    expenses
+  });
+});
+
+test('should fetch the expenses from firebase', async done => {
+  const store = createMockStore({});
+
+  await store.dispatch(startSetExpenses());
+
+  const actions = store.getActions();
+
+  expect(actions[0]).toEqual({
+    type: 'SET_EXPENSES',
+    expenses
+  });
 
   done();
 });

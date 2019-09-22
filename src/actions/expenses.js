@@ -39,3 +39,25 @@ export const editExpense = (id, updates) => ({
   id,
   updates
 });
+
+// SET EXPENSES
+
+export const setExpenses = expenses => ({
+  type: 'SET_EXPENSES',
+  expenses
+});
+
+export const startSetExpenses = () => {
+  return async dispatch => {
+    const expensesRef = await fs.collection('expenses').get();
+
+    const expenses = expensesRef.docs.map(expense => ({
+      id: expense.id,
+      ...expense.data()
+    }));
+
+    dispatch(setExpenses(expenses));
+
+    return expensesRef;
+  };
+};

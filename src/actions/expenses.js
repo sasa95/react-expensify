@@ -6,7 +6,8 @@ export const addExpense = expense => ({
 });
 
 export const startAddExpense = (expenseData = {}) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.uid;
     const {
       description = '',
       note = '',
@@ -16,7 +17,7 @@ export const startAddExpense = (expenseData = {}) => {
 
     const expense = { description, note, amount, createdAt };
 
-    const ref = await fs.collection('expenses').add(expense);
+    const ref = await fs.collection(`users/${uid}/expenses`).add(expense);
 
     dispatch(
       addExpense({
@@ -35,8 +36,9 @@ export const removeExpense = ({ id } = {}) => ({
 });
 
 export const startRemoveExpense = id => {
-  return async dispatch => {
-    await fs.doc(`expenses/${id}`).delete();
+  return async (dispatch, getState) => {
+    const uid = getState().auth.uid;
+    await fs.doc(`users/${uid}/expenses/${id}`).delete();
 
     dispatch(removeExpense({ id }));
   };
@@ -49,8 +51,10 @@ export const editExpense = (id, updates) => ({
 });
 
 export const startEditExpense = (id, updates) => {
-  return async dispatch => {
-    await fs.doc(`expenses/${id}`).update({
+  return async (dispatch, getState) => {
+    const uid = getState().auth.uid;
+
+    await fs.doc(`users/${uid}/expenses/${id}`).update({
       ...updates
     });
 
@@ -64,8 +68,10 @@ export const setExpenses = expenses => ({
 });
 
 export const startSetExpenses = () => {
-  return async dispatch => {
-    const expensesRef = await fs.collection('expenses').get();
+  return async (dispatch, getState) => {
+    const uid = getState().auth.uid;
+
+    const expensesRef = await fs.collection(`users/${uid}/expenses`).get();
 
     const expenses = expensesRef.docs.map(expense => ({
       id: expense.id,
